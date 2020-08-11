@@ -5,6 +5,7 @@
 
       input { display: block; }
       ul    { list-style: none; }
+      .tabrow td div { width: 100%; }
 
     </style>
   </head>
@@ -26,7 +27,8 @@
               <th>AudioBitrate</th>                                                        
           </tr>
       </thead>
-  </table>    
+      <tbody></tbody>
+  </table>   
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
@@ -37,7 +39,13 @@
           var url = $("#dl textarea");
           var messages = $("#messages");
 
-          $("#dl").submit(function(){
+          $("body").on("click",".editrow",function(ev){
+            var index = $("tr"). index($(this).parents(".tabrow")); 
+            console.log("index="+index);
+          });          
+
+          $("#dl").submit(function(e){
+            e.preventDefault();
             if (!url.val()) return false;
 
             $.ajax({
@@ -45,17 +53,18 @@
                 type: 'GET',
                 async: false,
                 success: function(data){ 
-                  $('#table1').DataTable({
-                data: data.Formats,
-                columns: [
-                    { data: 'Extension' },
-                    { data: 'Resolution' },
-                    { data: 'VideoEncoding' },
-                    { data: 'AudioEncoding' },
-                    { data: 'AudioBitrate' }
-                ],
-                "pageLength": 3
-            });
+                    $.each(data.Formats, function(i, row){
+                      var newRow =
+                        "<tr class='tabrow'>"
+                        +"<td>"+row.Extension+"</td>"
+                        +"<td>"+row.Resolution+"</td>"
+                        +"<td>"+row.VideoEncoding+"</td>"
+                        +"<td>"+row.AudioEncoding+"</td>"
+                        +"<td>"+row.AudioBitrate+"</td>"
+                        +"<td> <button  class='editrow'>download </button> </td>"
+                        +"</tr>" ;
+                        $(newRow).appendTo("#table1 tbody");
+                    });
                 },
                 error: function(data) {
                     alert('woops!'); //or whatever
