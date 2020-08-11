@@ -12,11 +12,7 @@
       
 
   <body>
-    <form id="dl">
-      <textarea></textarea>
-      <input type="submit" value="Download" />
-    </form>
-    
+    <textarea id="textarea"></textarea>   
     <table id="table1">
       <thead>
           <tr>
@@ -36,31 +32,10 @@
     <script>
 
         $(function(){
-          var url = $("#dl textarea");
-          var messages = $("#messages");
-
-          $("body").on("click",".editrow",function(ev){
-            var index = $("tr"). index($(this).parents(".tabrow")); 
-
-            console.log("index="+index);
-            $.ajax({
-                url: '/download/'+btoa(url.val())+'/'+(index - 1),
-                type: 'GET',
-                async: false,
-                success: function(data){ 
-                  alert("success");
-                },
-                error: function(data) {
-                    alert('woops!'); //or whatever
-                }
-            });            
-
-          });          
-
-          $("#dl").submit(function(e){
+          $("#textarea").on('change', function(e) {
             e.preventDefault();
-            if (!url.val()) return false;
-            var encodedUrl = btoa(url.val());
+            if (!$(this).val()) return false;
+            var encodedUrl = btoa($(this).val());
 
             $.ajax({
                 url: '/info/'+encodedUrl,
