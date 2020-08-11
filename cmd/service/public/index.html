@@ -21,25 +21,27 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
+
         $(function(){
           var url = $("#dl textarea");
           var messages = $("#messages");
 
           $("#dl").submit(function(){
             if (!url.val()) return false;
-            $.ajax({ 
-             type: "POST",
-             dataType: "json",
-             data: JSON.stringify({url: url}),
-             url: "http://{{.Host}}/info",
-             success: function(data, status){        
-              alert("Data: " + data + "\nStatus: " + status);
-              messages.append('<li>'+data+'</li>');
-             }
-         });
-                         
+
+            $.ajax({
+                url: '/info/'+btoa(url.val()),
+                type: 'GET',
+                async: false,
+                success: function(data){ 
+                    alert(data);
+                },
+                error: function(data) {
+                    alert('woops!'); //or whatever
+                }
+            });            
           });
-        });
+        })
 
     </script>
 
