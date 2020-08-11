@@ -3,10 +3,8 @@ package main
 import (
 	"context"
 	"strconv"
-	"encoding/json"
 	"net/http"
 	"os"
-	"io"
 	"github.com/Andreychik32/ytdl"
 	"github.com/labstack/echo/v4"
 	"encoding/base64"
@@ -19,39 +17,6 @@ type youtuber struct {
 	tracer Tracer
 }
 
-type UrlRequest struct {
-	Link string `json:"link"`	
-	Id int `json:"id"`
-}
-
-
-
-type VideoFormat struct {
-	Itag int `json: "itag"`
-	Extension string `json: "Extension"`
-	AudioEncoding string `json: "AudioEncoding"`
-	AudioBitrate string `json: "AudioBitrate"`
-	VideoEncoding string `json: "VideoEncoding"`
-	Resolution string `json: "Resolution"`
-}
-
-type VideoInformation struct {
-	Title string `json:"Title"`
-	Formats []VideoFormat `json:"Formats"`
-}
-
-func (r *youtuber) downloadVideo(url string, index int, out io.Writer) (string, string) {
-	videoInfo := r.getVideoInfo(url)
-	filename := videoInfo.ID+"."+videoInfo.Formats[index].Extension
-	title := videoInfo.Title +"."+videoInfo.Formats[index].Extension
-	err := r.client.Download(r.cxt, videoInfo, videoInfo.Formats[index], out)
-	if err != nil {
-		panic(err)
-	}
-
-	return title, filename
-}
-
 func (r *youtuber) DownloadVideo(c echo.Context) (err error) {
 	encoded := c.Param("url")
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -59,15 +24,25 @@ func (r *youtuber) DownloadVideo(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
+	url := string(decoded);
+
+	videoInfo := r.getVideoInfo(url)
+	format := videoInfo.Formats[id]
+	filename := videoInfo.ID+"."+format.Extension
+	
 	res := c.Response()
 	header := res.Header()
 	header.Set(echo.HeaderContentType, echo.MIMEOctetStream)
-	header.Set(echo.HeaderContentDisposition, "attachment; filename="+"abc.mp4")
+	header.Set(echo.HeaderContentDisposition, "attachment; filename="+filename)
 	header.Set("Content-Transfer-Encoding", "binary")
 	header.Set("Expires", "0")
 	res.WriteHeader(http.StatusOK)
 
-	r.downloadVideo(string(decoded), id, res)
+	err1 := r.client.Download(r.cxt, videoInfo, format, res)
+	if err1 != nil {
+		return
+	}
+
 	res.Flush()
 	return
 }
@@ -89,19 +64,6 @@ func (r *youtuber) getVideoInfo(url string) *ytdl.VideoInfo{
 		panic(err)
 	}
 	return videoInfo
-}
-
-func (r *youtuber) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if(req.Method=="POST"){
-		decoder := json.NewDecoder(req.Body)
-		var t UrlRequest
-		err := decoder.Decode(&t)
-		if err != nil {
-			panic(err)
-		}
-		r.getVideoInfo(t.Link)
-	}
-		
 }
 
 func newYoutuber(e *echo.Echo) *youtuber {

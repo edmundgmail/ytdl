@@ -2,17 +2,23 @@
   <head>
     <title>Chat</title>
     <style>
-
-      input { display: block; }
-      ul    { list-style: none; }
       .tabrow td div { width: 100%; }
-
+      textarea
+      {
+        width:100%;
+      }
+      .textwrapper
+      {
+        border:1px solid #999999;
+        margin:5px 0;
+        padding:3px;
+      }
     </style>
   </head>
       
 
   <body>
-    <textarea id="textarea"></textarea>   
+    <textarea class="textwrapper" id="textarea"></textarea>   
     <table id="table1">
       <thead>
           <tr>
