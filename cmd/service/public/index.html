@@ -41,15 +41,29 @@
 
           $("body").on("click",".editrow",function(ev){
             var index = $("tr"). index($(this).parents(".tabrow")); 
+
             console.log("index="+index);
+            $.ajax({
+                url: '/download/'+btoa(url.val())+'/'+(index - 1),
+                type: 'GET',
+                async: false,
+                success: function(data){ 
+                  alert("success");
+                },
+                error: function(data) {
+                    alert('woops!'); //or whatever
+                }
+            });            
+
           });          
 
           $("#dl").submit(function(e){
             e.preventDefault();
             if (!url.val()) return false;
+            var encodedUrl = btoa(url.val());
 
             $.ajax({
-                url: '/info/'+btoa(url.val()),
+                url: '/info/'+encodedUrl,
                 type: 'GET',
                 async: false,
                 success: function(data){ 
@@ -61,7 +75,7 @@
                         +"<td>"+row.VideoEncoding+"</td>"
                         +"<td>"+row.AudioEncoding+"</td>"
                         +"<td>"+row.AudioBitrate+"</td>"
-                        +"<td> <button  class='editrow'>download </button> </td>"
+                        +"<td> <a href='/download/"+encodedUrl+"/"+ i +"' >download</a> </td>"
                         +"</tr>" ;
                         $(newRow).appendTo("#table1 tbody");
                     });
