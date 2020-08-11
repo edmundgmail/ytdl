@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <title>Chat</title>
+    <style>
+
+      input { display: block; }
+      ul    { list-style: none; }
+
+    </style>
+  </head>
+      
+
+  <body>
+    <ul id="messages"></ul>
+    <form id="dl">
+      <textarea></textarea>
+      <input type="submit" value="Download" />
+    </form>
+    
+    
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+          var url = $("#dl textarea");
+          var messages = $("#messages");
+
+          $("#dl").submit(function(){
+            if (!url.val()) return false;
+            $.ajax({ 
+             type: "POST",
+             dataType: "json",
+             data: JSON.stringify({url: url}),
+             url: "http://{{.Host}}/info",
+             success: function(data, status){        
+              alert("Data: " + data + "\nStatus: " + status);
+              messages.append('<li>'+data+'</li>');
+             }
+         });
+                         
+          });
+        });
+
+    </script>
+
+  </body>
+</html>
