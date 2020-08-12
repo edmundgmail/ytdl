@@ -28,7 +28,7 @@ func (r *youtuber) DownloadVideo(c echo.Context) (err error) {
 
 	videoInfo := r.getVideoInfo(url)
 	format := videoInfo.Formats[id]
-	filename := videoInfo.ID+"."+format.Extension
+	filename := videoInfo.Title+"."+format.Extension
 	
 	res := c.Response()
 	header := res.Header()
