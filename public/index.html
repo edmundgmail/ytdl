@@ -12,14 +12,20 @@
       {
         width:100%;
       }
+      .textwrapper
+      {
+        border:1px solid #999999;
+        margin:5px 0;
+        padding:3px;
+      }      
 
     </style>
   </head>
       
 
-  <body>
-    <input id = "btnSubmit" type="submit" value="Paste and Search"/>
-    <label id = "lblTitle"></label>
+  <body>  
+    <textarea class="textwrapper" id="textarea"></textarea>   
+    <label class="textwrapper" id="lblTitle"></label>
     <table id="table1">
       <thead>
           <tr>
@@ -39,11 +45,11 @@
     <script>
 
         $(function(){
-          $("#btnSubmit").click(function(e){
+          
+          $("#textarea").on('change', function(e) {
             e.preventDefault();
-            navigator.clipboard.readText().then(
-              clipText => {
-                e.preventDefault();
+            var clipText = $("#textarea").val();
+
             if (!clipText || !clipText.startsWith("https://youtu.be")) {
               alert("Current content on clipboard = " + clipText+ ", which is invalid youtube link");
               return;
@@ -76,7 +82,7 @@
                     alert('woops!'); //or whatever
                 }
             });            
-          })});
+          });
         });
     </script>
 
