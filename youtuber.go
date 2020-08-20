@@ -28,7 +28,11 @@ func (r *youtuber) DownloadVideo(c echo.Context) (err error) {
 
 	videoInfo := r.getVideoInfo(url)
 	format := videoInfo.Formats[id]
-	filename := videoInfo.Title+"."+format.Extension
+	ext := format.Extension
+	if(format.Itag.Resolution == "" && format.Itag.VideoEncoding == "" && format.Itag.AudioEncoding != ""){
+		ext = "mp3"
+	}
+	filename := videoInfo.Title+"."+ext
 	
 	res := c.Response()
 	header := res.Header()

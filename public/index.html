@@ -12,18 +12,14 @@
       {
         width:100%;
       }
-      .textwrapper
-      {
-        border:1px solid #999999;
-        margin:5px 0;
-        padding:3px;
-      }
+
     </style>
   </head>
       
 
   <body>
-    <textarea class="textwrapper" id="textarea"></textarea>   
+    <input id = "btnSubmit" type="submit" value="Paste and Search"/>
+    <label id = "lblTitle"></label>
     <table id="table1">
       <thead>
           <tr>
@@ -43,16 +39,26 @@
     <script>
 
         $(function(){
-          $("#textarea").on('change', function(e) {
+          $("#btnSubmit").click(function(e){
             e.preventDefault();
-            if (!$(this).val()) return false;
-            var encodedUrl = btoa($(this).val());
+            navigator.clipboard.readText().then(
+              clipText => {
+                e.preventDefault();
+            if (!clipText || !clipText.startsWith("https://youtu.be")) {
+              alert("Current content on clipboard = " + clipText+ ", which is invalid youtube link");
+              return;
+            }
+
+            $("#table1 tr").remove();
+
+            var encodedUrl = btoa(clipText);
 
             $.ajax({
                 url: '/info/'+encodedUrl,
                 type: 'GET',
                 async: false,
                 success: function(data){ 
+                    $("#lblTitle").text(data.Title);
                     $.each(data.Formats, function(i, row){
                       var newRow =
                         "<tr class='tabrow'>"
@@ -70,9 +76,8 @@
                     alert('woops!'); //or whatever
                 }
             });            
-          });
-        })
-
+          })});
+        });
     </script>
 
   </body>
